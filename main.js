@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { CAMERA, PLAYER, WORLD } from './src/config.js';
 import { createGameState } from './src/state.js';
-import { createLevel1 } from './src/level.js';
+import { createLevel1, spawnLevel1Enemies } from './src/level.js';
 import { createPlayer, attachWeapon, setupControls, updatePlayerMovement } from './src/player.js';
 import { updateEnemies } from './src/enemies.js';
 import { updateBullets } from './src/bullets.js';
@@ -82,14 +82,24 @@ function startGame() {
 
     state.camera.position.set(0, PLAYER.EYE_HEIGHT, 0);
     player.velocity.set(0, 0, 0);
+    player.ammo = PLAYER.MAX_AMMO;
+    player.weaponCooldown = 0;
+    if (player.weapon) player.weapon.visible = true;
 
     // Drop any leftover entities from a previous run.
     for (const e of state.enemies) state.scene.remove(e.mesh);
     for (const b of state.playerBullets) state.scene.remove(b.mesh);
     for (const b of state.enemyBullets) state.scene.remove(b.mesh);
+    for (const f of state.fragments) state.scene.remove(f.mesh);
+    for (const t of state.thrownWeapons) state.scene.remove(t.mesh);
     state.enemies.length = 0;
     state.playerBullets.length = 0;
     state.enemyBullets.length = 0;
+    state.fragments.length = 0;
+    state.thrownWeapons.length = 0;
+    for (const b of state.throwableObjects) b.active = false;
+
+    spawnLevel1Enemies(state);
 
     state.controls.lock();
 }

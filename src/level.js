@@ -60,13 +60,19 @@ const LEVEL_1_SPAWNS = [
     { x: 0, z: 20, type: ENEMY_TYPES.SLUGGER },
 ];
 
-export function createLevel1(state) {
+export function buildArena(state) {
     createFloor(state.scene);
     createWalls(state.scene, state.obstacles);
+    scatterThrowables(state.scene, state.throwableObjects);
+}
 
+export function spawnLevel1Enemies(state) {
     for (const p of LEVEL_1_SPAWNS) {
         spawnEnemy(state, p.x, p.z, p.type);
     }
+}
 
-    scatterThrowables(state.scene, state.throwableObjects);
+export function createLevel1(state) {
+    buildArena(state);
+    spawnLevel1Enemies(state);
 }
